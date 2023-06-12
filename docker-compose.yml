@@ -29,7 +29,31 @@ services:
       - CHROMA_OTEL_GRANULARITY=${CHROMA_OTEL_GRANULARITY}
       - CHROMA_SERVER_NOFILE=${CHROMA_SERVER_NOFILE}
     ports:
+<<<<<<< HEAD
       - 8000:8000
+=======
+      - 8082:8000
+    depends_on:
+      - clickhouse
+    networks:
+      - net
+
+  clickhouse:
+    image: clickhouse/clickhouse-server:22.9-alpine
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+      - CLICKHOUSE_TCP_PORT=9000
+      - CLICKHOUSE_HTTP_PORT=8123
+    ports:
+      - '8123:8123'
+      - '9000:9000'
+    volumes:
+      - clickhouse_data:/var/lib/clickhouse
+      - clickhouse_logs:/var/log/clickhouse-server
+      - backups:/backups
+      - ./config/backup_disk.xml:/etc/clickhouse-server/config.d/backup_disk.xml
+      - ./config/chroma_users.xml:/etc/clickhouse-server/users.d/chroma.xml
+>>>>>>> ec5e67da (updated the ports for deployment on gurt; changed clickhouse ports for dev, changed prod from 8000 to 8082 and dev from 8000 to 8092)
     networks:
       - net
 
