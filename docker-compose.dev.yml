@@ -1,31 +1,31 @@
 version: '3.9'
 
 networks:
-  net:
+  net-dev:
     driver: bridge
 
 services:
-  server:
-    image: server
+  server-dev:
+    image: server-dev
     build:
       context: .
       dockerfile: Dockerfile
     volumes:
-      - ./:/chroma
-      - index_data:/index_data
+      - ./:/chroma-dev
+      - index_data-dev:/index_data
     command: uvicorn chromadb.app:app --reload --workers 1 --host 0.0.0.0 --port 8000 --log-config log_config.yml
     environment:
       - CHROMA_DB_IMPL=clickhouse
-      - CLICKHOUSE_HOST=clickhouse
+      - CLICKHOUSE_HOST=clickhouse-dev
       - CLICKHOUSE_PORT=8123
     ports:
       - 8092:8000
     depends_on:
-      - clickhouse
+      - clickhouse-dev
     networks:
-      - net
+      - net-dev
 
-  clickhouse:
+  clickhouse-dev:
     image: clickhouse/clickhouse-server:22.9-alpine
     environment:
       - ALLOW_EMPTY_PASSWORD=yes
@@ -35,20 +35,20 @@ services:
       - '8124:8124'
       - '9001:9001'
     volumes:
-      - clickhouse_data:/var/lib/clickhouse
-      - clickhouse_logs:/var/log/clickhouse-server
-      - backups:/backups
+      - clickhouse_data-dev:/var/lib/clickhouse
+      - clickhouse_logs-dev:/var/log/clickhouse-server
+      - backups-dev:/backups
       - ./config/backup_disk.xml:/etc/clickhouse-server/config.d/backup_disk.xml
       - ./config/chroma_users.xml:/etc/clickhouse-server/users.d/chroma.xml
     networks:
-      - net
+      - net-dev
 
 volumes:
-  clickhouse_data:
+  clickhouse_data-dev:
     driver: local
-  clickhouse_logs:
+  clickhouse_logs-dev:
     driver: local
-  index_data:
+  index_data-dev:
     driver: local
-  backups:
+  backups-dev:
     driver: local
