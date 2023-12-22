@@ -1,8 +1,7 @@
 version: '3.9'
 
-
 networks:
-  net:
+  net-dev:
     driver: bridge
 
 services:
